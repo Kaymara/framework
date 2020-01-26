@@ -1,0 +1,23 @@
+{
+    "name": "kaymara/kaymara",
+    "description": "The Kaymara MVC Framework",
+    "type": "project",
+    "keywords": ["framework", "php", "mvc"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Derek Fulginiti",
+            "email": "derek.fulginiti@gmail.com"
+        }
+    ],
+    "require": {
+       "php": "^7.4",
+       "ext-json": "*",
+       "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Compose\\": "src/Compose"
+        }
+    }
+}
