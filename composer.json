@@ -2,7 +2,11 @@
     "name": "kaymara/kaymara",
     "description": "The Kaymara MVC Framework",
     "type": "project",
-    "keywords": ["framework", "php", "mvc"],
+    "keywords": [
+        "framework",
+        "php",
+        "mvc"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -11,9 +15,10 @@
         }
     ],
     "require": {
-       "php": "^7.4",
-       "ext-json": "*",
-       "ext-mbstring": "*"
+        "php": "^7.4",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "psr/container": "^1.0"
     },
     "autoload": {
         "psr-4": {
