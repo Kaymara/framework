@@ -27,6 +27,7 @@ interface ServiceAggregateInterface
      * Does the given tag exist in the aggregate?
      *
      * @param string $tag
+     * 
      * @return boolean
      */
     public function tagged(string $tag) : bool;
