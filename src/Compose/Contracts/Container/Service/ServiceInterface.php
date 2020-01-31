@@ -55,4 +55,27 @@ interface ServiceInterface extends ContainerAwareInterface
      * @return bool
      */
     public function aliasedWith(string $alias) : bool;
+
+    /**
+     * Add argument to be injected
+     *
+     * @param mixed $arg
+     * @return ServiceInterface
+     */
+    public function argument($arg) : ServiceInterface;
+
+    /**
+     * Add arguments to be injected
+     *
+     * @param array $args
+     * @return ServiceInterface
+     */
+    public function arguments(array $args) : ServiceInterface;
+
+    /**
+     * Resolve service
+     *
+     * @return mixed
+     */
+    public function make();
 }
