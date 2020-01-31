@@ -29,7 +29,7 @@ interface ServiceAggregateInterface
      * @param string $tag
      * @return boolean
      */
-    public function tag(string $tag) : bool;
+    public function tagged(string $tag) : bool;
 
     /**
      * Resolve service from the aggregate
