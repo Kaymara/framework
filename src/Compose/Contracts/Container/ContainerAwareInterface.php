@@ -2,10 +2,14 @@
 
 namespace Compose\Contracts\Container;
 
+use Compose\Container\Exception\ContainerException;
+
 interface ContainerAwareInterface
 {
     /**
      * Get the container instance
+     * 
+     * @throws ContainerException
      * 
      * @return ContainerInterface
      */
