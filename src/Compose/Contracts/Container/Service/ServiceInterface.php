@@ -16,7 +16,11 @@ interface ServiceInterface extends ContainerAwareInterface
     public function tag(string $tag) : self;
 
     /**
-     * Add many tags to the service.
+     * Add many tags to the service
+     *
+     * @param array $tags
+     * 
+     * @return self
      */
     public function tagMany(array $tags) : self;
 
@@ -73,9 +77,34 @@ interface ServiceInterface extends ContainerAwareInterface
     public function arguments(array $args) : ServiceInterface;
 
     /**
+     * Is the service a singleton?
+     *
+     * @return  boolean
+     */ 
+    public function isSingleton();
+
+    /**
+     * Set whether the service is a singleton
+     *
+     * @param  boolean  $singleton
+     *
+     * @return  self
+     */ 
+    public function singleton(bool $singleton = true) : ServiceInterface;
+
+    /**
+     * Set/Get concrete of the service
+     *
+     * @param \Closure|string|null $concrete
+     * 
+     * @return  mixed
+     */ 
+    public function concrete($concrete = null);
+
+    /**
      * Resolve service
      *
      * @return mixed
      */
-    public function make();
+    public function resolve();
 }
