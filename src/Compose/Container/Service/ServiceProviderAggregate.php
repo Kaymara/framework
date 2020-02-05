@@ -116,4 +116,11 @@ class ServiceProviderAggregate implements ServiceProviderAggregateInterface
             $this->booted[] = $provider;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flush() {
+        $this->providers = [];
+    }
 }

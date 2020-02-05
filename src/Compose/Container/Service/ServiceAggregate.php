@@ -89,11 +89,7 @@ class ServiceAggregate implements ServiceAggregateInterface
     }
 
     /**
-     * Resolve array of tagged services from the aggregate
-     *
-     * @param string $tag
-     * 
-     * @return mixed
+     * {@inheritDoc}
      */
     public function resolveTagged(string $tag) {
         $resolved = [];
@@ -105,5 +101,14 @@ class ServiceAggregate implements ServiceAggregateInterface
         }
 
         return $resolved;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flush() {
+        $this->services = [];
+
+        return $this;
     }
 }

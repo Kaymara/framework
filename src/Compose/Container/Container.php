@@ -4,6 +4,7 @@ namespace Compose\Container;
 
 use Compose\Container\Service\ServiceAggregate;
 use Compose\Container\Service\ServiceProviderAggregate;
+use Compose\Container\Service\SingletonAggregate;
 use Compose\Contracts\Container\ContainerAwareInterface;
 use Compose\Contracts\Container\ContainerInterface;
 use Compose\Contracts\Container\Service\ServiceAggregateInterface;
@@ -46,7 +47,7 @@ class Container implements ContainerInterface
         ServiceProviderAggregateInterface $providers = null
     ) {
         $this->services = $services ?? new ServiceAggregate();
-        $this->singletons = $singletons ?? new ServiceAggregate();
+        $this->singletons = $singletons ?? new SingletonAggregate();
         $this->providers = $providers ?? new ServiceProviderAggregate();
 
         if ($this->services instanceof ContainerAwareInterface) {
@@ -65,7 +66,7 @@ class Container implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function add(string $alias, $concrete = null) {
+    public function service(string $alias, $concrete = null) {
         $concrete ??= $alias;
 
         $this->services->add($alias, $concrete);
@@ -75,21 +76,29 @@ class Container implements ContainerInterface
      * {@inheritDoc}
      */
     public function singleton(string $alias, $concrete = null) {
-        // 
+        $concrete ??= $alias;
+
+        $this->singletons->add($alias, $concrete);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function instance(string $alias, $instance) {
-        //
+    public function instance(string $alias, $instance, $singleton = false) {
+        $aggregate = $singleton ? $this->singletons : $this->services;
+
+        $aggregate->add($alias, $instance);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function clear() {
-        //
+    public function flush() {
+        $this->services->flush();
+        $this->singletons->flush();
+        $this->providers->flush();
+
+        return $this;
     }
 
     /**
@@ -102,7 +111,28 @@ class Container implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function has() {
-        //
+    public function has($alias) {
+        if ($this->services->exists($alias) || $this->services->taggedWith($alias)) {
+            return true;
+        }
+
+        if ($this->singletons->exists($alias) || $this->singletons->taggedWith($alias)) {
+            return true;
+        }
+
+        if ($this->providers->provides($alias)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addProvider($provider) {
+        $this->providers->add($provider);
+
+        return $this;
     }
 }

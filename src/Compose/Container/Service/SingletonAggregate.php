@@ -4,7 +4,7 @@ namespace Compose\Container\Service;
 
 use Compose\Container\Exception\ServiceNotFoundException;
 use Compose\Container\Traits\ContainerAware;
-use Compose\Contrats\Container\Service\SingletonAggregateInterface;
+use Compose\Contracts\Container\Service\SingletonAggregateInterface;
 use Compose\Contracts\Container\Service\ServiceInterface;
 
 class SingletonAggregate implements SingletonAggregateInterface
@@ -105,5 +105,12 @@ class SingletonAggregate implements SingletonAggregateInterface
         }
 
         return $resolved;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function flush() {
+        $this->singletons = [];
     }
 }
