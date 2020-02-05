@@ -2,51 +2,63 @@
 
 namespace Compose\Contracts\Container\Service;
 
-interface ServiceAggregateInterface
+use Compose\Contracts\Container\ContainerAwareInterface;
+use Compose\Contracts\Container\Service\ServiceInterface;
+
+interface ServiceAggregateInterface extends ContainerAwareInterface
 {
     /**
      * Add a service to the aggregate
      *
-     * @param string $id
-     * @param ServiceInterface $service
+     * @param string $alias
+     * @param mixed $service
      * 
      * @return ServiceInterface
      */
-    public function add(string $id, $service) : ServiceInterface;
+    public function add(string $alias, $service) : ServiceInterface;
 
     /**
-     * Does the given alias exist in the aggregate?
+     * Does a service with the given alias exist in the aggregate?
      *
-     * @param string $id
+     * @param string $alias
      * 
      * @return boolean
      */
-    public function has(string $id) : bool;
+    public function exists(string $alias) : bool;
 
     /**
-     * Does the given tag exist in the aggregate?
+     * Are there services with the given tag in the aggregate?
      *
      * @param string $tag
      * 
      * @return boolean
      */
-    public function tagged(string $tag) : bool;
+    public function taggedWith(string $tag) : bool;
 
     /**
-     * Resolve service from the aggregate
-     * 
-     * @param string $id
+     * Retrieves service with given alias from the aggregate
      *
+     * @param string $alias
+     * 
      * @return ServiceInterface
      */
-    public function make(string $id) : ServiceInterface;
+    public function service(string $alias) : ServiceInterface;
 
     /**
-     * Resolve services with given tag from the aggregate
+     * Resolve service with given alias from the aggregaate
+     *
+     * @param string $alias
+     * 
+     * @return mixed
+     */
+    public function resolve(string $alias);
+
+    /**
+     * Resolve array of tagged services from the aggregate
      *
      * @param string $tag
      * 
      * @return mixed
      */
-    public function makeTagged(string $tag) : ServiceAggregateInterface;
+    public function resolveTagged(string $tag);
 }
