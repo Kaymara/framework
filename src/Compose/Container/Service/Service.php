@@ -3,8 +3,12 @@
 namespace Compose\Container\Service;
 
 use Closure;
+use Compose\Container\Exception\ContainerException;
+use Compose\Container\Exception\ServiceException;
 use Compose\Container\Traits\ContainerAware;
 use Compose\Contracts\Container\Service\ServiceInterface;
+use ReflectionClass;
+use ReflectionException;
 
 class Service implements ServiceInterface
 {
@@ -72,7 +76,7 @@ class Service implements ServiceInterface
      */
     public function __construct(string $alias, $concrete = null) {
         $this->aliases[] = $alias;
-        $this->concrete = $concrete ?? $this->closure($concrete);
+        $this->concrete = $concrete ?? $alias;
     }
 
     /**
@@ -226,25 +230,10 @@ class Service implements ServiceInterface
             return $this->concrete;
         }
 
-        $this->concrete = $this->closure($concrete);
+        $this->concrete = $concrete;
+        $this->instance = null;
 
         return $this;
-    }
-
-    /**
-     * Wrap concrete in closure
-     *
-     * @param \Closure|string $concrete
-     * 
-     * @return \Closure
-     */
-    protected function closure($concrete) {
-        // if the concrete is already a closure, return it
-        if ($concrete instanceof Closure) {
-            return $concrete;
-        }
-
-        return fn() => $this->resolveClass($concrete);
     }
 
     /**
@@ -290,7 +279,13 @@ class Service implements ServiceInterface
         }
         
         // if the concrete is a closure, resolve the closure
-        $concrete = $this->resolveClosure($concrete);
+        if ($concrete instanceof Closure) {
+            $concrete = $this->resolveClosure($concrete);
+        }
+
+        if (is_string($concrete)) {
+            $this->resolveClass($concrete);
+        }
 
         // call any resolution methods that have been set on the service
 
@@ -309,14 +304,48 @@ class Service implements ServiceInterface
      * @return mixed
      */
     protected function resolveClosure(Closure $closure) {
-        return $closure();
+        $dependencies = $this->resolveArguments($this->arguments);
+
+        return $closure($dependencies);
     }
 
     protected function resolveClass(string $concrete) {
-        // new up reflection class
-        // if exception is thrown, catch and throw custom exception
-        // if the service doesn't have any dependencies, we can safely instantiate
-        // resolve dependencies
-        // instantiate new instance with resolved dependencies injected
+        $concrete = $this->concrete;
+
+        try {
+            $reflector = new ReflectionClass($concrete);
+        } catch (ReflectionException $e) {
+            throw new ServiceException("Class \"$concrete\" does not exist.", 0, $e);
+        }
+
+        if (! $reflector->isInstantiable()) {
+            // bail
+        }
+
+        if (empty($this->arguments)) {
+            return new $concrete;
+        }
+
+        $resolved = $this->resolveArguments($this->arguments);
+
+        return $reflector->newInstanceArgs($resolved);
+    }
+
+    protected function resolveArguments($args) {
+        $resolved = [];
+
+        try {
+            $container = $this->getContainer();
+        } catch (ContainerException $e) {
+            throw $e;
+        }
+
+        foreach ($args as $arg) {
+            if ($container->has($arg)) {
+                $resolved[] = $container->get($arg);
+            }
+        }
+
+        return $resolved;
     }
 }
