@@ -61,4 +61,11 @@ interface SingletonAggregateInterface extends ContainerAwareInterface
      * @return mixed
      */
     public function makeTagged(string $tag);
+
+    /**
+     * Flush singletons
+     *
+     * @return self
+     */
+    public function flush() : self;
 }

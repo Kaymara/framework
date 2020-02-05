@@ -3,7 +3,6 @@
 namespace Compose\Contracts\Container\Service;
 
 use Compose\Contracts\Container\ContainerAwareInterface;
-use Compose\Container\Exception\ServiceProviderException;
 use IteratorAggregate;
 
 interface ServiceProviderAggregateInterface extends ContainerAwareInterface, IteratorAggregate
@@ -44,4 +43,11 @@ interface ServiceProviderAggregateInterface extends ContainerAwareInterface, Ite
      * @return void
      */
     public function boot();
+
+    /**
+     * Flush providers
+     *
+     * @return self
+     */
+    public function flush() : self;
 }

@@ -5,6 +5,7 @@ namespace Compose\Contracts\Container;
 use Closure;
 use Compose\Contracts\Container\Service\ServiceInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Compose\Contracts\Container\Service\ServiceProviderInterface;
 
 interface ContainerInterface extends PsrContainerInterface
 {
@@ -16,7 +17,7 @@ interface ContainerInterface extends PsrContainerInterface
      * 
      * @return ServiceInterface
      */
-    public function add(string $alias, $concrete = null) : ServiceInterface;
+    public function service(string $alias, $concrete = null) : ServiceInterface;
 
     /**
      * Add a singleton to the container
@@ -33,15 +34,25 @@ interface ContainerInterface extends PsrContainerInterface
      * 
      * @param string $alias
      * @param mixed $instance
+     * @param bool $singleton
      * 
      * @return mixed
      */
-    public function instance(string $alias, $instance);
+    public function instance(string $alias, $instance, $singleton = false);
 
     /**
-     * Clear the container of all services
+     * Flush the container of all items
      * 
-     * @return void
+     * @return self
      */
-    public function clear() : void;
+    public function flush() : self;
+
+    /**
+     * Add a provider to the container
+     *
+     * @param ServiceProviderInterface|string $provider
+     * 
+     * @return self
+     */
+    public function addProvider($provider) : self;
 }

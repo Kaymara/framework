@@ -61,4 +61,11 @@ interface ServiceAggregateInterface extends ContainerAwareInterface
      * @return mixed
      */
     public function resolveTagged(string $tag);
+
+    /**
+     * Flush services
+     *
+     * @return self
+     */
+    public function flush() : self;
 }
