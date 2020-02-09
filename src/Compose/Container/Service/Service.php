@@ -72,7 +72,7 @@ class Service implements ServiceInterface
      * Service constructor
      *
      * @param string $alias
-     * @param \Closure|string|null $concrete
+     * @param mixed $concrete
      */
     public function __construct(string $alias, $concrete = null) {
         $this->aliases[] = $alias;
@@ -80,11 +80,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Add a tag to the service.
-     * 
-     * @param string $id
-     * 
-     * @return self
+     * {@inheritDoc}
      */
     public function tag(string $tag) {
         if (! $this->taggedWith($tag)) {
@@ -95,11 +91,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Add many tags to the service
-     *
-     * @param array $tags
-     * 
-     * @return self
+     * {@inheritDoc}
      */
     public function tagMany(array $tags) {
         foreach ($tags as $tag) {
@@ -112,22 +104,14 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Has the service been tagged with given tag? 
-     * 
-     * @param string $tag
-     * 
-     * @return bool
+     * {@inheritDoc}
      */
     public function taggedWith(string $tag) {
         return in_array($tag, $this->tags);
     }
 
     /**
-     * Add an alias to the service.
-     * 
-     * @param string $alias
-     * 
-     * @return self
+     * {@inheritDoc}
      */
     public function alias(string $alias) {
         if (! $this->aliasedWith($alias)) {
@@ -138,11 +122,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Add many aliases to the service.
-     * 
-     * @param array $aliases
-     * 
-     * @return self
+     * {@inheritDoc}
      */
     public function aliasMany(array $aliases) {
         foreach ($aliases as $alias) {
@@ -155,22 +135,14 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Has the service been aliased with the given alias?
-     * 
-     * @param string $alias
-     * 
-     * @return bool
+     * {@inheritDoc}
      */
     public function aliasedWith(string $alias) {
         return in_array($alias, $this->aliases);
     }
 
     /**
-     * Add argument to be injected
-     *
-     * @param mixed $arg
-     * 
-     * @return ServiceInterface
+     * {@inheritDoc}
      */
     public function argument($arg) {
         $this->arguments[] = $arg;
@@ -179,11 +151,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Add arguments to be injected
-     *
-     * @param array $args
-     * 
-     * @return ServiceInterface
+     * {@inheritDoc}
      */
     public function arguments(array $args) {
         foreach ($args as $arg) {
@@ -194,9 +162,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Is the service a singleton?
-     *
-     * @return  boolean
+     * {@inheritDoc}
      */ 
     public function isSingleton()
     {
@@ -204,11 +170,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Set whether the service is a singleton
-     *
-     * @param  boolean  $singleton
-     *
-     * @return  self
+     * {@inheritDoc}
      */ 
     public function singleton(bool $singleton = true) : ServiceInterface
     {
@@ -218,11 +180,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Set/Get concrete of the service
-     *
-     * @param  \Closure|string|null  $concrete
-     * 
-     * @return  mixed
+     * {@inheritDoc}
      */ 
     public function concrete($concrete = null)
     {
@@ -266,9 +224,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * Resolve service
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function resolve() {
         $concrete = $this->concrete;
@@ -287,13 +243,13 @@ class Service implements ServiceInterface
             $this->resolveClass($concrete);
         }
 
-        // call any resolution methods that have been set on the service
+        // todo: call any resolution methods that have been set on the service
 
-        // apply any service extenders
+        // todo: apply any service extenders
 
-        // set the instsance to the concrete
+        // todo: set the instsance to the concrete
 
-        // return the instance
+        // todo: return the instance
     }
 
     /**
@@ -310,12 +266,10 @@ class Service implements ServiceInterface
     }
 
     protected function resolveClass(string $concrete) {
-        $concrete = $this->concrete;
-
         try {
             $reflector = new ReflectionClass($concrete);
         } catch (ReflectionException $e) {
-            throw new ServiceException("Class \"$concrete\" does not exist.", 0, $e);
+            throw new ServiceException("Class {$concrete} does not exist.", 0, $e);
         }
 
         if (! $reflector->isInstantiable()) {
