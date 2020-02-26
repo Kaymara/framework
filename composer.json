@@ -24,5 +24,9 @@
         "psr-4": {
             "Compose\\": "src/Compose"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "symfony/var-dumper": "^5.0"
     }
 }

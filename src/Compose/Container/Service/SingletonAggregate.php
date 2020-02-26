@@ -32,7 +32,7 @@ class SingletonAggregate implements SingletonAggregateInterface
      */
     public function add(string $alias, $service) {
         if (! $service instanceof ServiceInterface) {
-            $service = (new Service($alias, $service))->singleton();
+            $service = new Service($alias, $service);
         }
 
         $this->services[] = $service->singleton();

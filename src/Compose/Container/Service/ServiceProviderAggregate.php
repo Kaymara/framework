@@ -87,13 +87,16 @@ class ServiceProviderAggregate implements ServiceProviderAggregateInterface
     /**
      * {@inheritDoc}
      */
-    public function register() {
-        foreach ($this->providers as $provider) {
-            if (in_array($provider, $this->registered, true)) {
-                continue;
-            }
+    public function register(string $service) {
+        if (! $this->provides($service)) {
+            throw new ServiceProviderException("{$service} is not provided by a service provider.");
+        }
 
+        $providers = array_filter($this->providers, fn($p) => $p->provides($service) && ! $this->registered($p));
+        
+        foreach ($providers as $provider) {
             $provider->register();
+
             $this->registered[] = $provider;
         }
     }
@@ -101,13 +104,34 @@ class ServiceProviderAggregate implements ServiceProviderAggregateInterface
     /**
      * {@inheritDoc}
      */
-    public function boot() {
-        foreach ($this->providers as $provider) {
-            if (in_array($provider, $this->booted, true)) {
-                continue;
-            }
+    public function registerAll() {
+        $providers = array_filter($this->providers, fn($p) => ! $this->registered($p));
 
-            if (! in_array($provider, $this->registered, true)) {
+        foreach ($providers as $provider) {
+            $provider->register();
+            $this->registered[] = $provider;
+        }
+    }
+
+    /**
+     * Has the provider already been registered?
+     *
+     * @param ServiceProviderInterface $provider
+     * 
+     * @return void
+     */
+    protected function registered(ServiceProviderInterface $provider) {
+        return in_array($provider, $this->registered, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function boot() {
+        $providers = array_filter($this->providers, fn($p) => ! $this->booted($p));
+
+        foreach ($providers as $provider) {
+           if (! $this->registered($provider)) {
                 $provider->register();
                 $this->registered[] = $provider;
             }
@@ -118,9 +142,22 @@ class ServiceProviderAggregate implements ServiceProviderAggregateInterface
     }
 
     /**
+     * Has the provider already booted?
+     *
+     * @param ServiceProviderInterface $provider
+     * 
+     * @return void
+     */
+    protected function booted(ServiceProviderInterface $provider) {
+        return in_array($provider, $this->booted, true);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function flush() {
         $this->providers = [];
+        $this->registered = [];
+        $this->booted = [];
     }
 }

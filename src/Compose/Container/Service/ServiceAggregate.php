@@ -4,7 +4,7 @@ namespace Compose\Container\Service;
 
 use Compose\Container\Exception\ServiceNotFoundException;
 use Compose\Container\Traits\ContainerAware;
-use Compose\Contrats\Container\Service\ServiceAggregateInterface;
+use Compose\Contracts\Container\Service\ServiceAggregateInterface;
 use Compose\Contracts\Container\Service\ServiceInterface;
 
 class ServiceAggregate implements ServiceAggregateInterface

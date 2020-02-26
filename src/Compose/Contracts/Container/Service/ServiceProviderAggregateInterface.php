@@ -27,13 +27,20 @@ interface ServiceProviderAggregateInterface extends ContainerAwareInterface, Ite
     public function provides(string $service) : bool;
 
     /**
-     * Registers all service providers in the aggregate
+     * Register service provider that provides given service
      *
-     * @param string $provider
+     * @param string|null $service
      * 
      * @return void
      */
-    public function register();
+    public function register(string $service);
+
+    /**
+     * Registers all service providers in the aggregate
+     *
+     * @return void
+     */
+    public function registerAll();
 
     /**
      * Boots all service providers in the aggregate

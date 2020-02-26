@@ -43,7 +43,7 @@ class Service implements ServiceInterface
     protected $tags = [];
 
     /**
-     * Aliases that the service is known by
+     * Aliases managed by the container
      * 
      * @var array
      */
@@ -240,7 +240,7 @@ class Service implements ServiceInterface
         }
 
         if (is_string($concrete)) {
-            $this->resolveClass($concrete);
+            $this->getContainer()->resolveClass($concrete);
         }
 
         // todo: call any resolution methods that have been set on the service
@@ -263,43 +263,5 @@ class Service implements ServiceInterface
         $dependencies = $this->resolveArguments($this->arguments);
 
         return $closure($dependencies);
-    }
-
-    protected function resolveClass(string $concrete) {
-        try {
-            $reflector = new ReflectionClass($concrete);
-        } catch (ReflectionException $e) {
-            throw new ServiceException("Class {$concrete} does not exist.", 0, $e);
-        }
-
-        if (! $reflector->isInstantiable()) {
-            // bail
-        }
-
-        if (empty($this->arguments)) {
-            return new $concrete;
-        }
-
-        $resolved = $this->resolveArguments($this->arguments);
-
-        return $reflector->newInstanceArgs($resolved);
-    }
-
-    protected function resolveArguments($args) {
-        $resolved = [];
-
-        try {
-            $container = $this->getContainer();
-        } catch (ContainerException $e) {
-            throw $e;
-        }
-
-        foreach ($args as $arg) {
-            if ($container->has($arg)) {
-                $resolved[] = $container->get($arg);
-            }
-        }
-
-        return $resolved;
     }
 }

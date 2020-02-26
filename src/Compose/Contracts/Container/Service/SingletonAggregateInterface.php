@@ -51,7 +51,7 @@ interface SingletonAggregateInterface extends ContainerAwareInterface
      * 
      * @return mixed
      */
-    public function make(string $alias);
+    public function resolve(string $alias);
 
     /**
      * Resolve array of tagged singletons from the aggregate
@@ -60,7 +60,7 @@ interface SingletonAggregateInterface extends ContainerAwareInterface
      * 
      * @return mixed
      */
-    public function makeTagged(string $tag);
+    public function resolveTagged(string $tag);
 
     /**
      * Flush singletons
