@@ -43,6 +43,19 @@ class OverridingParamTest extends TestCase
 
         $this->assertSame(['name' => 'Derek'], $container->make('foo'));
     }
+
+    public function testOverrideMultipleTimes()
+    {
+        $container = new Container;
+
+        $container->service('foo', function ($c, $params) {
+            return $params;
+        });
+
+        $this->assertSame(['name' => 'Derek'], $container->make('foo', ['name' => 'Derek']));
+        $this->assertSame(['name' => 'Soriam'], $container->make('foo', ['name' => 'Soriam']));
+        $this->assertSame(['name' => 'Amara'], $container->make('foo', ['name' => 'Amara']));
+    }
 }
 
 class ServiceStubOverridingParamWithoutDefault
