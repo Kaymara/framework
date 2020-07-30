@@ -13,9 +13,7 @@ class ExtendingTest extends TestCase
 
         $container->service('foo', ServiceExtendingStub::class);
         
-        $container->extend('foo', function ($oldService, $container) {
-            return $oldService->int = 25;
-        });
+        $container->extend('foo', fn ($oldService, $c) => $oldService->int = 25);
 
         $service = $container->make('foo');
 
@@ -29,9 +27,7 @@ class ExtendingTest extends TestCase
 
         $container->singleton('foo', ServiceExtendingStub::class);
         
-        $container->extend('foo', function ($oldService, $container) {
-            return $oldService->int = 25;
-        });
+        $container->extend('foo', fn ($oldService, $c) => $oldService->int = 25);
 
         $service = $container->make('foo');
 
@@ -48,7 +44,7 @@ class ExtendingTest extends TestCase
 
         $container->instance('foo', $service);
         
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService->int = 25;
 
             return $oldService;
@@ -66,19 +62,19 @@ class ExtendingTest extends TestCase
 
         $container->service('foo', ServiceExtendingStub1::class);
         
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService->a = 1;
 
             return $oldService;
         });
 
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService->b = 2;
 
             return $oldService;
         });
 
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService->c = 3;
 
             return $oldService;
@@ -100,7 +96,7 @@ class ExtendingTest extends TestCase
 
         $container->alias('foo', 'bar');
 
-        $container->extend('bar', function ($oldService, $container) {
+        $container->extend('bar', function ($oldService, $c) {
             $oldService->int = 25;
 
             return $oldService;
@@ -118,7 +114,7 @@ class ExtendingTest extends TestCase
 
         $container->service('foo', ServiceLazyExtendingStub::class);
 
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService::$int = 25;
 
             return $oldService;
@@ -135,7 +131,7 @@ class ExtendingTest extends TestCase
     {
         $container = new Container;
 
-        $container->extend('foo', function ($oldService, $container) {
+        $container->extend('foo', function ($oldService, $c) {
             $oldService->int = 25;
 
             return $oldService;

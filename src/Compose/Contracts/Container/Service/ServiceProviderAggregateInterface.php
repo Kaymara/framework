@@ -5,7 +5,7 @@ namespace Compose\Contracts\Container\Service;
 use Compose\Contracts\Container\ContainerAwareInterface;
 use IteratorAggregate;
 
-interface ServiceProviderAggregateInterface extends ContainerAwareInterface, IteratorAggregate
+interface ServiceProviderAggregateInterface extends ContainerAwareInterface
 {
     /**
      * Add a service provider to the aggregate
@@ -15,7 +15,7 @@ interface ServiceProviderAggregateInterface extends ContainerAwareInterface, Ite
      * 
      * @return self
      */
-    public function add($provider) : ServiceProviderAggregateInterface;
+    public function add($provider);
 
     /**
      * Is the given service provided by the aggregate?

@@ -43,4 +43,14 @@ interface ContainerInterface extends PsrContainerInterface
      * Flush the container of all items
      */
     public function flush();
+
+    /**
+     * Resolve the given alias
+     *
+     * @param string $alias
+     * @param array $paramOverrides
+     *
+     * @return mixed
+     */
+    public function make(string $alias, array $paramOverrides = []);
 }

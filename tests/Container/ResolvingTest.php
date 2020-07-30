@@ -73,9 +73,7 @@ class ResolvingTest extends TestCase
     {
         $container = new Container;
 
-        $container->service('foo', function () {
-            return new ServiceResolutionStub;
-        });
+        $container->service('foo', fn () => new ServiceResolutionStub);
 
         $this->assertInstanceOf(ServiceResolutionStub::class, $container->make('foo'));
     }
@@ -84,9 +82,7 @@ class ResolvingTest extends TestCase
     {
         $container = new Container;
 
-        $container->singleton('foo', function () {
-            return new ServiceResolutionStub;
-        });
+        $container->singleton('foo', fn () => new ServiceResolutionStub);
 
         $this->assertSame($container->make('foo'), $container->make('foo'));
     }
@@ -147,9 +143,7 @@ class ResolvingTest extends TestCase
     {
         $container = new Container;
 
-        $container->service('foo', function ($c) {
-            return $c;
-        });
+        $container->service('foo', fn ($c) => $c);
 
         $this->assertSame($container, $container->make('foo'));
     }

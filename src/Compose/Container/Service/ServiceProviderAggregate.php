@@ -9,8 +9,6 @@ use Compose\Contracts\Container\Service\ServiceProviderInterface;
 
 class ServiceProviderAggregate implements ServiceProviderAggregateInterface
 {
-    use ContainerAware;
-
     /**
      * Array of providers
      *

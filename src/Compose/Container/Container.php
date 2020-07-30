@@ -51,11 +51,18 @@ class Container implements ArrayAccess, ContainerInterface
     protected $extenders;
 
     /**
-     * Service parameter defautls overrides
+     * Service parameter defaults overrides
      *
      * @var array
      */
     protected $paramDefaultsOverrides = [];
+
+    /**
+     * Contextual bindings
+     *
+     * @var array
+     */
+    protected $contextualBindings;
 
     /**
      * Registered tags in the container
@@ -262,11 +269,7 @@ class Container implements ArrayAccess, ContainerInterface
     }
 
     /**
-     * Resolve the given alias 
-     *
-     * @param string $alias
-     * 
-     * @return mixed
+     * {@inheritDoc}
      */
     public function make(string $alias, array $paramOverrides = []) 
     {
@@ -288,8 +291,11 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @param string $alias
      * @param array $paramOverrides
-     * 
+     *
      * @return mixed
+     *
+     * @throws ArgumentResolutionException
+     * @throws ContainerException
      */
     protected function resolve(string $alias, $paramOverrides = []) 
     {
@@ -303,7 +309,7 @@ class Container implements ArrayAccess, ContainerInterface
 
         $this->paramDefaultsOverrides = $paramOverrides;
 
-        $service = $this->build($concrete, $alias);
+        $service = $this->build($concrete);
 
         $this->extendService($alias, $service);
 
@@ -360,11 +366,61 @@ class Container implements ArrayAccess, ContainerInterface
      */
     protected function getConcrete(string $alias) 
     {
+        // we need to first check for a contextual binding for given alias and concrete
+        // if there is one then we should return that
+        if (! is_null($concrete = $this->getContextualConcrete($alias))) {
+            return $concrete;
+        }
+
         if (isset($this->services[$alias])) {
             return $this->services[$alias]['concrete'];
         }
 
         return $alias;
+    }
+
+    /**
+     * Get the contextual concrete for given alias
+     *
+     * @param string $alias
+     *
+     * @return \Closure|string|null
+     */
+    protected function getContextualConcrete(string $alias)
+    {
+        if (! is_null($binding = $this->getContextualBinding($alias))) {
+            return $binding;
+        }
+
+        if (empty($this->serviceAliases[$alias])) {
+            return null;
+        }
+
+        foreach ($this->serviceAliases[$alias] as $alias) {
+            if (! is_null($binding = $this->getContextualBinding($alias))) {
+                return $binding;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the contextual binding for given alias
+     * 
+     * @param $alias
+     *
+     * @return mixed|null
+     */
+    protected function getContextualBinding($alias)
+    {
+        $context = $this->getCallingClass(6); // todo: figure out a better strategy
+
+        if (! isset($this->contextualBindings[$context][$alias])) {
+            return null;
+        }
+
+        return $this->contextualBindings[$context][$alias];
     }
 
     /**
@@ -385,10 +441,11 @@ class Container implements ArrayAccess, ContainerInterface
      * Instantiate an instance of the given type
      *
      * @param string|\Closure $concrete
-     * 
-     * @throws ArgumentResolutionException
-     * 
+     *
      * @return mixed
+     *
+     * @throws ArgumentResolutionException
+     * @throws ContainerException
      */
     protected function build($concrete) 
     {
@@ -535,7 +592,7 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @return ContainerInterface
      */
-    public function getContainer()
+    public static function getContainer()
     {
         if (is_null(static::$instance)) {
             static::$instance = new static;
@@ -549,9 +606,9 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @param ContainerInterface|null $container
      * 
-     * @return ContainerInteface|null
+     * @return ContainerInterface|null
      */
-    public function setContainer(ContainerInterface $container = null) 
+    public static function setContainer(ContainerInterface $container = null)
     {
         return static::$instance = $container;
     }
@@ -672,6 +729,55 @@ class Container implements ArrayAccess, ContainerInterface
     protected function clearParamDefaultsOverrides(string $alias)
     {
         unset($this->paramDefaultsOverrides[$alias]);
+    }
+
+    /**
+     * Define a contextual binding implementation
+     *
+     * @param \Closure|string $implementation
+     *
+     * @return ContextualBinding
+     */
+    public function yield($implementation)
+    {
+        if (is_null($implementation)) {
+            throw new LogicException('A contextual binding must yield something.');
+        }
+
+        return new ContextualBinding($implementation, $this);
+    }
+
+    /**
+     * Add contextual binding to the container
+     *
+     * @param $concrete
+     * @param $abstract
+     * @param $implementation
+     *
+     * @return void
+     */
+    public function addContextualBinding($concrete, $abstract, $implementation)
+    {
+        $this->contextualBindings[$concrete][$this->getAlias($abstract)] = $implementation;
+    }
+
+    /**
+     * Get calling class
+     * todo: move this to helper function library
+     *
+     * @param int $depth
+     *
+     * @return mixed
+     */
+    protected function getCallingClass($depth = 1)
+    {
+        $trace = debug_backtrace($depth);
+
+        if (! isset($trace[$depth])) {
+            throw new LogicException('Unable to trace back ' . $depth . ' calls.');
+        }
+
+        return $trace[$depth]['class'];
     }
 
     /**

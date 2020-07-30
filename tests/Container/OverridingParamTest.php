@@ -22,9 +22,7 @@ class OverridingParamTest extends TestCase
     {
         $container = new Container;
 
-        $container->service('foo', function ($c, $params) {
-            return $params;
-        });
+        $container->service('foo', fn ($c, $params) => $params);
 
         $this->assertSame(['age' => 25], $container->make('foo', ['age' => 25]));
     }
@@ -33,13 +31,9 @@ class OverridingParamTest extends TestCase
     {
         $container = new Container;
 
-        $container->service('foo', function ($c) {
-            return $c->make('bar', ['name' => 'Derek']);
-        });
+        $container->service('foo', fn ($c) => $c->make('bar', ['name' => 'Derek']));
 
-        $container->service('bar', function ($c, $params) {
-            return $params;
-        });
+        $container->service('bar', fn ($c, $params) => $params);
 
         $this->assertSame(['name' => 'Derek'], $container->make('foo'));
     }
@@ -48,9 +42,7 @@ class OverridingParamTest extends TestCase
     {
         $container = new Container;
 
-        $container->service('foo', function ($c, $params) {
-            return $params;
-        });
+        $container->service('foo', fn ($c, $params) => $params);
 
         $this->assertSame(['name' => 'Derek'], $container->make('foo', ['name' => 'Derek']));
         $this->assertSame(['name' => 'Soriam'], $container->make('foo', ['name' => 'Soriam']));
